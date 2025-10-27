@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import type { User, Comment } from '../types';
 import { UserIcon } from './icons';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface LeaderboardPageProps {
     users: User[];
@@ -8,7 +9,7 @@ interface LeaderboardPageProps {
 }
 
 export const LeaderboardPage: React.FC<LeaderboardPageProps> = ({ users, comments }) => {
-    
+    const { t } = useTranslation();
     const userScores = useMemo(() => {
         const scores = new Map<number, number>();
         comments.forEach(comment => {
@@ -28,13 +29,13 @@ export const LeaderboardPage: React.FC<LeaderboardPageProps> = ({ users, comment
                 const user = users.find(u => u.id === userId);
                 return {
                     userId,
-                    name: user ? user.name : '未知用户',
+                    name: user ? user.name : t('leaderboard.unknownUser'),
                     score,
                 };
             })
             .sort((a, b) => b.score - a.score);
 
-    }, [users, comments]);
+    }, [users, comments, t]);
 
     const getTrophyColor = (rank: number) => {
         if (rank === 0) return 'text-yellow-500';
@@ -46,8 +47,8 @@ export const LeaderboardPage: React.FC<LeaderboardPageProps> = ({ users, comment
     return (
         <div className="max-w-2xl mx-auto">
             <div className="bg-syno-dark-secondary p-6 rounded-lg border border-syno-border">
-                <h1 className="text-3xl font-bold text-syno-text mb-2">社区排行榜</h1>
-                <p className="text-syno-text-secondary mb-6">根据用户评论获得的赞同总数进行排名。</p>
+                <h1 className="text-3xl font-bold text-syno-text mb-2">{t('leaderboard.title')}</h1>
+                <p className="text-syno-text-secondary mb-6">{t('leaderboard.subtitle')}</p>
 
                 <div className="space-y-3">
                     {userScores.map((user, index) => (
@@ -57,13 +58,13 @@ export const LeaderboardPage: React.FC<LeaderboardPageProps> = ({ users, comment
                                  <UserIcon className="w-8 h-8 p-1.5 bg-syno-border rounded-full text-syno-text-secondary" />
                                 <span className="font-semibold text-syno-text">{user.name}</span>
                             </div>
-                            <div className="font-bold text-syno-primary text-lg">{user.score} 分</div>
+                            <div className="font-bold text-syno-primary text-lg">{user.score} {t('leaderboard.points')}</div>
                         </div>
                     ))}
                 </div>
                  {userScores.length === 0 && (
                     <div className="text-center py-10 text-syno-text-secondary">
-                        暂无用户数据
+                        {t('leaderboard.noData')}
                     </div>
                 )}
             </div>

@@ -27,6 +27,7 @@ export interface Question {
     hot_score: number;
     vote_score: number;
     comment_count: number;
+    language: 'en' | 'zh-CN';
 }
 
 export interface Answer {

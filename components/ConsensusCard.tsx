@@ -1,8 +1,8 @@
-
 import React from 'react';
 import type { Consensus, VoteEntity } from '../types';
 import { VoteButtons } from './VoteButtons';
 import { CheckCircleIcon, XCircleIcon, SparklesIcon } from './icons';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface ConsensusCardProps {
     consensus: Consensus;
@@ -12,13 +12,14 @@ interface ConsensusCardProps {
 
 export const ConsensusCard: React.FC<ConsensusCardProps> = ({ consensus, onVote, getEntityVotes }) => {
     const { userVote } = getEntityVotes('consensus', consensus.id);
+    const { t } = useTranslation();
     
     return (
         <div className="bg-gradient-to-br from-indigo-50 to-white p-6 rounded-lg border-2 border-syno-primary/70">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                     <SparklesIcon className="w-7 h-7 text-yellow-500"/>
-                    <h2 className="text-2xl font-bold text-syno-primary">共识回答</h2>
+                    <h2 className="text-2xl font-bold text-syno-primary">{t('consensusCard.title')}</h2>
                 </div>
                 <VoteButtons
                     score={consensus.vote_score}
@@ -33,7 +34,7 @@ export const ConsensusCard: React.FC<ConsensusCardProps> = ({ consensus, onVote,
                 <div>
                     <h4 className="font-semibold text-syno-text-secondary flex items-center mb-2">
                         <CheckCircleIcon className="w-5 h-5 text-green-500 mr-2" />
-                        主要依据
+                        {t('consensusCard.evidence')}
                     </h4>
                     <ul className="list-disc list-inside space-y-1 pl-2">
                         {consensus.evidence.map((item, index) => <li key={index}>{item}</li>)}
@@ -43,7 +44,7 @@ export const ConsensusCard: React.FC<ConsensusCardProps> = ({ consensus, onVote,
                 <div>
                     <h4 className="font-semibold text-syno-text-secondary flex items-center mb-2">
                         <XCircleIcon className="w-5 h-5 text-red-500 mr-2" />
-                        争议焦点
+                        {t('consensusCard.disagreements')}
                     </h4>
                     <ul className="list-disc list-inside space-y-1 pl-2">
                         {consensus.disagreements.map((item, index) => <li key={index}>{item}</li>)}
@@ -51,7 +52,7 @@ export const ConsensusCard: React.FC<ConsensusCardProps> = ({ consensus, onVote,
                 </div>
 
                 <div>
-                    <h4 className="font-semibold text-syno-text-secondary mb-2">小结</h4>
+                    <h4 className="font-semibold text-syno-text-secondary mb-2">{t('consensusCard.summary')}</h4>
                     <p className="bg-black/5 p-3 rounded-md">{consensus.summary}</p>
                 </div>
             </div>

@@ -1,0 +1,139 @@
+{
+  "header": {
+    "title": "Syno",
+    "leaderboard": "Leaderboard",
+    "searchPlaceholder": "Search questions...",
+    "newQuestion": "Ask AI",
+    "managePersonas": "Manage AI Personas",
+    "logout": "Logout",
+    "login": "Login / Register"
+  },
+  "feed": {
+    "communityFeed": "Community Feed",
+    "hot": "Hot",
+    "new": "New",
+    "circles": "Circles:",
+    "noQuestionsInLang": "No questions in the current language. Try switching languages or ask a new one!",
+    "aiGenerateTopic": "AI Generate Topic",
+    "generatingTopic": "Generating..."
+  },
+  "questionCard": {
+    "upvotes": "Upvotes",
+    "comments": "Comments"
+  },
+  "questionPage": {
+    "postedOn": "Posted on",
+    "aiAnswers": "AI Answers",
+    "comments": "Comments",
+    "notFound": "Question not found. Redirecting..."
+  },
+  "consensusCard": {
+    "title": "Consensus Answer",
+    "evidence": "Key Evidence",
+    "disagreements": "Points of Disagreement",
+    "summary": "Summary"
+  },
+  "newQuestionModal": {
+    "title": "AI-Assisted Question",
+    "subtitle": "Provide a guiding sentence, choose your AI persona, and let Syno do the rest!",
+    "guidanceLabel": "Guiding Sentence",
+    "guidancePlaceholder": "e.g., Discuss the impact of AI on junior software engineer roles",
+    "personaLabel": "Choose Questioning Persona",
+    "circleLabel": "Choose Circle",
+    "submitButton": "AI Generate Question",
+    "errorMinChars": "Guidance sentence needs at least 5 characters."
+  },
+  "loginPage": {
+    "title": "Login or Register",
+    "subtitle": "Enter your username to continue. If the account doesn't exist, one will be created for you.",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "e.g., AI Enthusiast",
+    "submitButton": "Continue"
+  },
+  "profileModal": {
+    "title": "Manage AI Personas",
+    "newPersonaName": "New Persona",
+    "errorMinPersonas": "You must keep at least one persona.",
+    "current": "Current",
+    "setCurrent": "Set as Current",
+    "noDescription": "No description yet",
+    "addNew": "Add New Persona",
+    "advanced": {
+      "title": "Advanced Settings",
+      "subtitle": "Optional. Configure to use your own OpenAI-compatible API. If left blank, the default Gemini API will be used.",
+      "endpointLabel": "API Endpoint",
+      "modelLabel": "Model Name"
+    },
+    "edit": {
+      "title": "Edit Persona",
+      "delete": "Delete this persona",
+      "nameLabel": "Persona Name",
+      "descriptionLabel": "Persona Description",
+      "descriptionPlaceholder": "e.g., A sharp-tongued senior software architect focused on code practice and efficiency.",
+      "selectPrompt": "Select a persona from the left to edit"
+    }
+  },
+  "comment": {
+    "reply": "Reply",
+    "loginPrompt": {
+      "prefix": "Please",
+      "loginLink": "login",
+      "suffix": "to post a comment."
+    },
+    "replyingTo": "Replying to",
+    "generating": "Generating...",
+    "generateButton": "Generate Comment"
+  },
+  "leaderboard": {
+    "title": "Community Leaderboard",
+    "subtitle": "Ranked by the total number of upvotes received on comments.",
+    "unknownUser": "Unknown User",
+    "points": "Points",
+    "noData": "No user data available"
+  },
+  "search": {
+    "title": "Search Results",
+    "resultsFor": "results for",
+    "noResults": "No Results Found",
+    "tryDifferentKeywords": "Try searching with different keywords.",
+    "backToHome": "Back to Home"
+  },
+  "generatingMessages": {
+    "wait": "Please wait...",
+    "hotTopic": {
+      "fetch": "Syno Bot is capturing web hot topics...",
+      "answer": "Syno is thinking of answers for the hot topic...",
+      "batchFetch": "Syno Bot is capturing web hot topic ({{current}}/{{total}})...",
+      "batchAnswer": "Syno is thinking of answers for hot topic ({{current}}/{{total}})..."
+    },
+    "question": {
+      "creating": "AI is composing the question...",
+      "thinking": "Syno is thinking..."
+    },
+    "consensus": {
+      "updating": "Community discussion is active, Syno is updating the consensus..."
+    },
+    "comment": {
+      "generating": "Generating comment..."
+    }
+  },
+  "alerts": {
+    "loginRequired": "Please login before asking a question.",
+    "invalidPersona": "Invalid persona selection.",
+    "loginToVote": "Please login to vote.",
+    "loginToComment": "Please login to comment."
+  },
+  "time": {
+    "yearsAgo": "years ago",
+    "monthsAgo": "months ago",
+    "daysAgo": "days ago",
+    "hoursAgo": "hours ago",
+    "minutesAgo": "minutes ago",
+    "secondsAgo": "seconds ago",
+    "justNow": "Just now"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes"
+  }
+}

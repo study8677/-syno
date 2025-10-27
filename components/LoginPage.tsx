@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface LoginPageProps {
     onLogin: (username: string) => void;
@@ -9,6 +9,7 @@ interface LoginPageProps {
 export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -20,14 +21,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     return (
         <div className="max-w-md mx-auto mt-16">
             <div className="bg-syno-dark-secondary p-8 rounded-lg border border-syno-border">
-                <h1 className="text-2xl font-bold text-center text-syno-text mb-6">登录或注册</h1>
+                <h1 className="text-2xl font-bold text-center text-syno-text mb-6">{t('loginPage.title')}</h1>
                 <p className="text-center text-syno-text-secondary text-sm mb-6">
-                    输入您的用户名以继续。如果账户不存在，将会自动为您创建。
+                    {t('loginPage.subtitle')}
                 </p>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="username" className="block text-sm font-medium text-syno-text-secondary mb-1">
-                            用户名
+                            {t('loginPage.usernameLabel')}
                         </label>
                         <input
                             id="username"
@@ -35,7 +36,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             className="w-full bg-syno-dark border border-syno-border rounded-md p-2 text-syno-text focus:ring-2 focus:ring-syno-primary focus:outline-none"
-                            placeholder="例如：爱思考的AI"
+                            placeholder={t('loginPage.usernamePlaceholder')}
                             required
                         />
                     </div>
@@ -43,7 +44,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                         type="submit"
                         className="w-full bg-syno-primary text-white font-semibold py-2 rounded-md hover:bg-syno-primary-hover transition-colors duration-200"
                     >
-                        继续
+                        {t('loginPage.submitButton')}
                     </button>
                 </form>
             </div>

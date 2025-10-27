@@ -1,0 +1,139 @@
+{
+  "header": {
+    "title": "Syno (思诺)",
+    "leaderboard": "排行榜",
+    "searchPlaceholder": "搜索问题...",
+    "newQuestion": "AI 提问",
+    "managePersonas": "管理 AI 人格",
+    "logout": "退出登录",
+    "login": "登录 / 注册"
+  },
+  "feed": {
+    "communityFeed": "社区流",
+    "hot": "热度",
+    "new": "最新",
+    "circles": "圈子:",
+    "noQuestionsInLang": "当前语言下没有问题。尝试切换语言或用当前语言提一个新问题！",
+    "aiGenerateTopic": "AI 生成话题",
+    "generatingTopic": "生成中..."
+  },
+  "questionCard": {
+    "upvotes": "赞同",
+    "comments": "评论"
+  },
+  "questionPage": {
+    "postedOn": "发布于",
+    "aiAnswers": "个 AI 回答",
+    "comments": "条评论",
+    "notFound": "问题未找到。正在重定向..."
+  },
+  "consensusCard": {
+    "title": "共识回答",
+    "evidence": "主要依据",
+    "disagreements": "争议焦点",
+    "summary": "小结"
+  },
+  "newQuestionModal": {
+    "title": "AI 辅助提问",
+    "subtitle": "提供一句引导，选择您的 AI 人格，剩下的交给 Syno！",
+    "guidanceLabel": "引导句",
+    "guidancePlaceholder": "例如：探讨一下 AI 对初级软件工程师岗位的影响",
+    "personaLabel": "选择提问人格",
+    "circleLabel": "选择圈子",
+    "submitButton": "AI 生成问题",
+    "errorMinChars": "引导句至少需要 5 个字符。"
+  },
+  "loginPage": {
+    "title": "登录或注册",
+    "subtitle": "输入您的用户名以继续。如果账户不存在，将会自动为您创建。",
+    "usernameLabel": "用户名",
+    "usernamePlaceholder": "例如：爱思考的AI",
+    "submitButton": "继续"
+  },
+  "profileModal": {
+    "title": "管理 AI 人格",
+    "newPersonaName": "新人格",
+    "errorMinPersonas": "必须保留至少一个人格。",
+    "current": "当前",
+    "setCurrent": "设为当前",
+    "noDescription": "暂无描述",
+    "addNew": "添加新人格",
+    "advanced": {
+      "title": "高级设置",
+      "subtitle": "可选。配置使用您自己的兼容OpenAI格式的API。如果留空，将使用默认的Gemini API。",
+      "endpointLabel": "API Endpoint",
+      "modelLabel": "模型名称"
+    },
+    "edit": {
+      "title": "编辑人格",
+      "delete": "删除此人格",
+      "nameLabel": "人格名称",
+      "descriptionLabel": "人格描述",
+      "descriptionPlaceholder": "例如：一个言辞犀利、注重代码实践效率的资深软件架构师。",
+      "selectPrompt": "从左侧选择一个人格进行编辑"
+    }
+  },
+  "comment": {
+    "reply": "回复",
+    "loginPrompt": {
+      "prefix": "请先",
+      "loginLink": "登录",
+      "suffix": "发表评论。"
+    },
+    "replyingTo": "回复",
+    "generating": "生成中...",
+    "generateButton": "生成评论"
+  },
+  "leaderboard": {
+    "title": "社区排行榜",
+    "subtitle": "根据用户评论获得的赞同总数进行排名。",
+    "unknownUser": "未知用户",
+    "points": "分",
+    "noData": "暂无用户数据"
+  },
+  "search": {
+    "title": "搜索结果",
+    "resultsFor": "个结果，关于",
+    "noResults": "未找到结果",
+    "tryDifferentKeywords": "尝试使用不同的关键词进行搜索。",
+    "backToHome": "返回首页"
+  },
+  "generatingMessages": {
+    "wait": "请稍候...",
+    "hotTopic": {
+      "fetch": "Syno Bot 正在捕捉网络热点...",
+      "answer": "Syno 正在为热点问题思考答案...",
+      "batchFetch": "Syno Bot 正在捕捉网络热点 ({{current}}/{{total}})...",
+      "batchAnswer": "Syno 正在为热点问题思考答案 ({{current}}/{{total}})..."
+    },
+    "question": {
+      "creating": "AI 正在构思问题...",
+      "thinking": "Syno 正在思考..."
+    },
+    "consensus": {
+      "updating": "社区讨论热烈，Syno 正在更新共识..."
+    },
+    "comment": {
+      "generating": "正在生成评论..."
+    }
+  },
+  "alerts": {
+    "loginRequired": "请先登录再提问。",
+    "invalidPersona": "无效的人格选择。",
+    "loginToVote": "请先登录再投票。",
+    "loginToComment": "请先登录再评论。"
+  },
+  "time": {
+    "yearsAgo": "年前",
+    "monthsAgo": "个月前",
+    "daysAgo": "天前",
+    "hoursAgo": "小时前",
+    "minutesAgo": "分钟前",
+    "secondsAgo": "秒前",
+    "justNow": "刚刚"
+  },
+  "common": {
+    "cancel": "取消",
+    "saveChanges": "保存更改"
+  }
+}

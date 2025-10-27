@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route, useParams, useNavigate } from 'react-router-dom';
 import { Header } from './components/Header';
@@ -12,11 +13,12 @@ import { generateAnswers, generateComment, generateConsensusFromAnswers, generat
 import type { Question, Answer, Consensus, Comment, Vote, VoteEntity, User, PersonaProfile } from './types';
 import { calculateHotScore } from './utils/ranking';
 import { usePersistentState } from './hooks/usePersistentState';
-import { DEMO_QUESTIONS_ALL, DEMO_ANSWERS, DEMO_USERS, DEMO_COMMENTS } from './constants';
+import { DEMO_QUESTIONS_ALL, DEMO_INITIAL_ANSWERS_STATE, DEMO_USERS, DEMO_COMMENTS } from './constants';
+import { useTranslation } from './i18n/LanguageContext';
 
 const App: React.FC = () => {
     const [questions, setQuestions] = usePersistentState<Question[]>('syno_questions', DEMO_QUESTIONS_ALL);
-    const [answers, setAnswers] = usePersistentState<Record<string, Answer[]>>('syno_answers', { '1': DEMO_ANSWERS });
+    const [answers, setAnswers] = usePersistentState<Record<string, Answer[]>>('syno_answers', DEMO_INITIAL_ANSWERS_STATE);
     const [consensuses, setConsensuses] = usePersistentState<Record<string, Consensus>>('syno_consensuses', {});
     const [comments, setComments] = usePersistentState<Comment[]>('syno_comments', DEMO_COMMENTS);
     const [votes, setVotes] = usePersistentState<Vote[]>('syno_votes', []);
@@ -26,7 +28,9 @@ const App: React.FC = () => {
     const [isNewQuestionModalOpen, setIsNewQuestionModalOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [generatingMessage, setGeneratingMessage] = useState<string | null>(null);
+    const [isGeneratingManual, setIsGeneratingManual] = useState(false);
     const navigate = useNavigate();
+    const { language, t } = useTranslation();
 
     const updateHotScores = useCallback((updatedVotes: Vote[], allQuestions: Question[]) => {
         return allQuestions.map(q => {
@@ -42,64 +46,111 @@ const App: React.FC = () => {
     }, [votes, updateHotScores, setQuestions]);
 
     const SYNO_BOT_USER_ID = 999;
-    useEffect(() => {
-        const checkForHotTopicUpdate = async () => {
-            const lastTime = localStorage.getItem('syno_last_hot_question_time');
-            const twelveHours = 12 * 60 * 60 * 1000;
 
-            if (lastTime && (Date.now() - parseInt(lastTime, 10)) < twelveHours) {
+    // Effect for generating a hot topic periodically
+    useEffect(() => {
+        const TEN_HOURS = 10 * 60 * 60 * 1000;
+
+        const checkForPeriodicUpdate = async () => {
+            const lastTimeKey = `syno_last_periodic_topic_time`; // Use a single, global key
+            const lastTime = localStorage.getItem(lastTimeKey);
+
+            if (lastTime && (Date.now() - parseInt(lastTime, 10)) < TEN_HOURS) {
                 return;
             }
 
             const synoBotUser = users.find(u => u.id === SYNO_BOT_USER_ID);
             if (!synoBotUser) {
-                console.error("Syno Bot user not found. Cannot generate question.");
+                console.error("Syno Bot user not found. Cannot generate questions.");
                 return;
             }
-
-            setGeneratingMessage('Syno Bot 正在捕捉网络热点...');
+            
             try {
+                setGeneratingMessage(t('generatingMessages.hotTopic.fetch'));
+                
                 const circles = ['科技', '艺术', '生活', '金融'];
                 const randomCircle = circles[Math.floor(Math.random() * circles.length)];
-                const { title, detail } = await generateHotTopicQuestion(randomCircle);
+                const { title, detail } = await generateHotTopicQuestion(randomCircle, language);
 
-                if (title.includes("失败")) {
-                    console.warn("Failed to generate a valid hot topic question.");
-                    localStorage.setItem('syno_last_hot_question_time', Date.now().toString());
-                    return;
+                if (title.includes("失败") || title.includes("Failed")) {
+                    console.warn(`Failed to generate a valid hot topic question.`);
+                } else {
+                    const newQuestion: Question = {
+                        id: Date.now(),
+                        title: `${title} [🤖 AI Hot Topic]`,
+                        detail,
+                        circle: randomCircle,
+                        created_at: new Date().toISOString(),
+                        hot_score: 0,
+                        vote_score: 0,
+                        comment_count: 0,
+                        language: language,
+                    };
+                    setQuestions(prev => [newQuestion, ...prev]);
+                    
+                    setGeneratingMessage(t('generatingMessages.hotTopic.answer'));
+                    const personas: import('./types').Persona[] = ["学者", "工程师", "暴躁老哥", "圣母"];
+                    const generatedAnswers = await generateAnswers(newQuestion, personas, synoBotUser, language);
+                    setAnswers(prev => ({ ...prev, [newQuestion.id]: generatedAnswers }));
                 }
-
-                const newQuestion: Question = {
-                    id: Date.now(),
-                    title: `${title} [🤖 AI热点]`,
-                    detail,
-                    circle: randomCircle,
-                    created_at: new Date().toISOString(),
-                    hot_score: 0,
-                    vote_score: 0,
-                    comment_count: 0,
-                };
-
-                setQuestions(prev => [newQuestion, ...prev]);
                 
-                setGeneratingMessage('Syno 正在为热点问题思考答案...');
-                const personas: import('./types').Persona[] = ["学者", "工程师", "暴躁老哥", "圣母"];
-                const generatedAnswers = await generateAnswers(newQuestion, personas, synoBotUser);
-
-                setAnswers(prev => ({ ...prev, [newQuestion.id]: generatedAnswers }));
-                
-                localStorage.setItem('syno_last_hot_question_time', Date.now().toString());
+                localStorage.setItem(lastTimeKey, Date.now().toString());
 
             } catch (error) {
-                console.error("Failed to generate hot topic question:", error);
+                console.error("Failed to generate periodic hot topic question:", error);
             } finally {
                 setGeneratingMessage(null);
             }
         };
         
-        checkForHotTopicUpdate();
+        checkForPeriodicUpdate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [language]);
+
+    const handleGenerateSingleHotTopic = async () => {
+        setIsGeneratingManual(true);
+        const synoBotUser = users.find(u => u.id === SYNO_BOT_USER_ID);
+        if (!synoBotUser) {
+            console.error("Syno Bot user not found.");
+            setIsGeneratingManual(false);
+            return;
+        };
+
+        try {
+            const circles = ['科技', '艺术', '生活', '金融'];
+            const randomCircle = circles[Math.floor(Math.random() * circles.length)];
+            const { title, detail } = await generateHotTopicQuestion(randomCircle, language);
+
+            if (title.includes("失败") || title.includes("Failed")) {
+                console.warn("Failed to generate a valid hot topic question.");
+                return;
+            }
+
+            const newQuestion: Question = {
+                id: Date.now(),
+                title: `${title} [🤖 AI Hot Topic]`,
+                detail,
+                circle: randomCircle,
+                created_at: new Date().toISOString(),
+                hot_score: 0,
+                vote_score: 0,
+                comment_count: 0,
+                language: language,
+            };
+            setQuestions(prev => [newQuestion, ...prev]);
+
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            const personas: import('./types').Persona[] = ["学者", "工程师", "暴躁老哥", "圣母"];
+            const generatedAnswers = await generateAnswers(newQuestion, personas, synoBotUser, language);
+            setAnswers(prev => ({ ...prev, [newQuestion.id]: generatedAnswers }));
+
+        } catch (error) {
+            console.error("Failed to generate single hot topic:", error);
+        } finally {
+            setIsGeneratingManual(false);
+        }
+    };
 
     const handleLogin = (username: string) => {
         let user = users.find(u => u.name.toLowerCase() === username.toLowerCase());
@@ -132,19 +183,19 @@ const App: React.FC = () => {
 
     const handleNewQuestion = async (guidance: string, personaId: number, circle: string) => {
         if (!currentUser) {
-            alert("请先登录再提问。");
+            alert(t('alerts.loginRequired'));
             return;
         }
         const selectedPersona = currentUser.personas.find(p => p.id === personaId);
         if (!selectedPersona) {
-            alert("无效的人格选择。");
+            alert(t('alerts.invalidPersona'));
             return;
         }
 
-        setGeneratingMessage('AI 正在构思问题...');
+        setGeneratingMessage(t('generatingMessages.question.creating'));
         setIsNewQuestionModalOpen(false);
         try {
-            const { title, detail } = await generateQuestionFromGuidance(guidance, selectedPersona, currentUser);
+            const { title, detail } = await generateQuestionFromGuidance(guidance, selectedPersona, currentUser, language);
 
             const newQuestion: Question = {
                 id: Date.now(),
@@ -154,14 +205,15 @@ const App: React.FC = () => {
                 created_at: new Date().toISOString(),
                 hot_score: 0,
                 vote_score: 0,
-                comment_count: 0
+                comment_count: 0,
+                language: language
             };
 
             setQuestions(prev => [newQuestion, ...prev]);
             
-            setGeneratingMessage('Syno 正在思考...');
+            setGeneratingMessage(t('generatingMessages.question.thinking'));
             const personas: import('./types').Persona[] = ["学者", "工程师", "暴躁老哥", "圣母"];
-            const generatedAnswers = await generateAnswers(newQuestion, personas, currentUser);
+            const generatedAnswers = await generateAnswers(newQuestion, personas, currentUser, language);
 
             setAnswers(prev => ({ ...prev, [newQuestion.id]: generatedAnswers }));
             navigate(`/question/${newQuestion.id}`);
@@ -175,7 +227,7 @@ const App: React.FC = () => {
     
     const handleVote = (entity_type: VoteEntity, entity_id: number, delta: 1 | -1) => {
         if (!currentUser) {
-            alert("请先登录再投票。");
+            alert(t('alerts.loginToVote'));
             return;
         }
         setVotes(prevVotes => {
@@ -245,13 +297,14 @@ const App: React.FC = () => {
             return;
         }
 
-        setGeneratingMessage('社区讨论热烈，Syno 正在更新共识...');
+        setGeneratingMessage(t('generatingMessages.consensus.updating'));
         try {
             const newConsensus = await generateConsensusFromAnswers(
                 question,
                 questionAnswers.map(a => ({ persona: a.persona, content: a.content })),
                 questionComments,
-                currentUser
+                currentUser,
+                language
             );
             setConsensuses(prev => ({ ...prev, [questionId]: newConsensus }));
         } catch (error) {
@@ -263,14 +316,14 @@ const App: React.FC = () => {
 
     const handleComment = async (entity_type: VoteEntity, entity_id: number, prompt: string, parent_id: number | null): Promise<Comment | null> => {
         if (!currentUser) {
-            alert("请先登录再评论。");
+            alert(t('alerts.loginToComment'));
             return null;
         }
 
-        setGeneratingMessage('正在生成评论...');
+        setGeneratingMessage(t('generatingMessages.comment.generating'));
         let newComment: Comment | null = null;
         try {
-            const content = await generateComment(prompt, currentUser);
+            const content = await generateComment(prompt, currentUser, language);
             newComment = {
                 id: Date.now(),
                 entity_type,
@@ -328,12 +381,12 @@ const App: React.FC = () => {
                 <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 flex flex-col items-center justify-center z-50">
                     <div className="text-xl mb-4 font-semibold text-white">{generatingMessage}</div>
                     <div className="w-16 h-16 border-4 border-t-syno-primary border-gray-600 rounded-full animate-spin"></div>
-                     <p className="text-gray-300 mt-4 text-center max-w-md">请稍候...</p>
+                     <p className="text-gray-300 mt-4 text-center max-w-md">{t('generatingMessages.wait')}</p>
                 </div>
             )}
             <main className="container mx-auto px-4 py-8">
                  <Routes>
-                    <Route path="/" element={<Feed questions={questions} />} />
+                    <Route path="/" element={<Feed questions={questions} onGenerateHotTopic={handleGenerateSingleHotTopic} isGeneratingHotTopic={isGeneratingManual} />} />
                     <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
                     <Route path="/leaderboard" element={<LeaderboardPage users={users} comments={comments} />} />
                     <Route path="/search" element={<SearchResultsPage questions={questions} />} />
@@ -391,6 +444,7 @@ interface QuestionPageWrapperProps {
 const QuestionPageWrapper: React.FC<QuestionPageWrapperProps> = (props) => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const questionId = id ? parseInt(id, 10) : undefined;
     const question = props.questions.find(q => q.id === questionId);
 
@@ -401,7 +455,7 @@ const QuestionPageWrapper: React.FC<QuestionPageWrapperProps> = (props) => {
     }, [question, questionId, navigate]);
 
     if (!question || !questionId) {
-        return <div className="text-center text-syno-text-secondary">Question not found. Redirecting...</div>;
+        return <div className="text-center text-syno-text-secondary">{t('questionPage.notFound')}</div>;
     }
 
     return <QuestionPage 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { User } from '../types';
-import { UserIcon, DownArrowIcon, SearchIcon } from './icons';
+import { UserIcon, DownArrowIcon, SearchIcon, LanguageIcon } from './icons';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface HeaderProps {
     currentUser: User | null;
@@ -12,9 +13,12 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ currentUser, onNewQuestion, onProfile, onLogout }) => {
     const navigate = useNavigate();
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
+    const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+    const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
+    const userDropdownRef = useRef<HTMLDivElement>(null);
+    const langDropdownRef = useRef<HTMLDivElement>(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const { t, language, setLanguage } = useTranslation();
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,37 +27,38 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, onNewQuestion, onPr
             setSearchQuery('');
         }
     };
-
+    
+    // Generic hook for handling clicks outside of a dropdown
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            const triggerElement = dropdownRef.current?.previousElementSibling;
-            if (
-                dropdownRef.current && 
-                !dropdownRef.current.contains(event.target as Node) &&
-                triggerElement && 
-                !triggerElement.contains(event.target as Node)
-            ) {
-                setIsDropdownOpen(false);
+            if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node) && !userDropdownRef.current.previousElementSibling?.contains(event.target as Node)) {
+                setIsUserDropdownOpen(false);
+            }
+            if (langDropdownRef.current && !langDropdownRef.current.contains(event.target as Node) && !langDropdownRef.current.previousElementSibling?.contains(event.target as Node)) {
+                setIsLangDropdownOpen(false);
             }
         };
-        if (isDropdownOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
+        document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isDropdownOpen]);
+    }, []);
+
 
     const handleProfileClick = () => {
         onProfile();
-        setIsDropdownOpen(false);
+        setIsUserDropdownOpen(false);
     };
 
     const handleLogoutClick = () => {
         onLogout();
-        setIsDropdownOpen(false);
+        setIsUserDropdownOpen(false);
     };
 
+    const handleLanguageChange = (lang: 'en' | 'zh-CN') => {
+        setLanguage(lang);
+        setIsLangDropdownOpen(false);
+    }
 
     return (
         <header className="bg-syno-dark-secondary border-b border-syno-border sticky top-0 z-30">
@@ -63,11 +68,11 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, onNewQuestion, onPr
                         <div className="w-8 h-8 bg-syno-primary rounded-md flex items-center justify-center text-white font-bold text-xl">
                             思
                         </div>
-                        <h1 className="text-2xl font-bold text-syno-text">Syno (思诺)</h1>
+                        <h1 className="text-2xl font-bold text-syno-text">{t('header.title')}</h1>
                     </Link>
                      <nav className="hidden md:flex items-center space-x-2">
-                        <Link to="/leaderboard" className="px-3 py-2 rounded-md text-sm font-medium text-syno-text-secondary hover:bg-syno-border hover:text-syno-text transition-colors">
-                            排行榜
+                        <Link to="/leaderboard" className="px-4 py-2 rounded-md text-sm font-semibold text-syno-text bg-syno-dark-secondary border border-syno-border hover:bg-syno-border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-syno-primary">
+                            {t('header.leaderboard')}
                         </Link>
                     </nav>
                 </div>
@@ -75,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, onNewQuestion, onPr
                     <form onSubmit={handleSearchSubmit} className="w-full max-w-md hidden md:flex items-center relative">
                         <input
                             type="text"
-                            placeholder="搜索问题..."
+                            placeholder={t('header.searchPlaceholder')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="bg-syno-dark border border-syno-border rounded-full py-1.5 pl-10 pr-4 w-full text-syno-text focus:ring-2 focus:ring-syno-primary focus:outline-none transition-all"
@@ -84,34 +89,52 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, onNewQuestion, onPr
                     </form>
                  </div>
                 <div className="flex items-center space-x-4">
+                     <div className="relative">
+                        <button onClick={() => setIsLangDropdownOpen(p => !p)} className="flex items-center p-2 rounded-md hover:bg-syno-border transition-colors">
+                            <LanguageIcon className="w-5 h-5 text-syno-text-secondary"/>
+                        </button>
+                        {isLangDropdownOpen && (
+                             <div 
+                                ref={langDropdownRef} 
+                                className="absolute right-0 mt-2 w-36 bg-syno-dark-secondary border border-syno-border rounded-md shadow-lg py-1 z-40 animate-fade-in-down"
+                            >
+                                <button onClick={() => handleLanguageChange('zh-CN')} className={`block w-full text-left px-4 py-2 text-sm text-syno-text hover:bg-syno-border transition-colors ${language === 'zh-CN' ? 'font-bold text-syno-primary' : ''}`}>
+                                    简体中文
+                                </button>
+                                 <button onClick={() => handleLanguageChange('en')} className={`block w-full text-left px-4 py-2 text-sm text-syno-text hover:bg-syno-border transition-colors ${language === 'en' ? 'font-bold text-syno-primary' : ''}`}>
+                                    English
+                                </button>
+                            </div>
+                        )}
+                    </div>
                     <button
                         onClick={onNewQuestion}
                         className="bg-syno-primary text-white font-semibold px-4 py-2 rounded-md hover:bg-syno-primary-hover transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-syno-primary"
                     >
-                        AI 提问
+                        {t('header.newQuestion')}
                     </button>
                     {currentUser ? (
                          <div className="relative">
                             <button
-                                onClick={() => setIsDropdownOpen(prev => !prev)}
+                                onClick={() => setIsUserDropdownOpen(prev => !prev)}
                                 className="flex items-center space-x-2 text-syno-text p-1 rounded-md hover:bg-syno-border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-syno-primary"
                                 aria-haspopup="true"
-                                aria-expanded={isDropdownOpen}
+                                aria-expanded={isUserDropdownOpen}
                             >
                                 <UserIcon className="w-6 h-6 p-1 bg-syno-border rounded-full" />
                                 <span>{currentUser.name}</span>
-                                <DownArrowIcon className={`w-4 h-4 text-syno-text-secondary transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                                <DownArrowIcon className={`w-4 h-4 text-syno-text-secondary transition-transform duration-200 ${isUserDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
-                            {isDropdownOpen && (
+                            {isUserDropdownOpen && (
                                 <div 
-                                    ref={dropdownRef} 
+                                    ref={userDropdownRef} 
                                     className="absolute right-0 mt-2 w-48 bg-syno-dark-secondary border border-syno-border rounded-md shadow-lg py-1 z-40 animate-fade-in-down"
                                 >
                                     <button onClick={handleProfileClick} className="block w-full text-left px-4 py-2 text-sm text-syno-text hover:bg-syno-border transition-colors">
-                                        管理 AI 人格
+                                        {t('header.managePersonas')}
                                     </button>
                                     <button onClick={handleLogoutClick} className="block w-full text-left px-4 py-2 text-sm text-syno-text hover:bg-syno-border transition-colors">
-                                        退出登录
+                                        {t('header.logout')}
                                     </button>
                                 </div>
                             )}
@@ -121,7 +144,7 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, onNewQuestion, onPr
                             onClick={() => navigate('/login')}
                             className="bg-syno-dark-secondary text-syno-text font-semibold px-4 py-2 rounded-md border border-syno-border hover:bg-syno-border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-syno-primary"
                         >
-                            登录 / 注册
+                            {t('header.login')}
                         </button>
                     )}
                 </div>
