@@ -1,0 +1,5 @@
+{
+  "name": "Syno (思诺) - AI Q&A Community",
+  "description": "A text-based AI Q&A community where users ask questions, multiple AI personas generate answers, and a structured consensus answer is formed. Features community feed, voting, and comments.",
+  "requestFramePermissions": []
+}
