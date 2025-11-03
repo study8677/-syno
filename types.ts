@@ -19,6 +19,7 @@ export interface User {
 
 export interface Question {
     id: number;
+    content_id: number; // Unique ID for a piece of content, linking its translations
     title: string;
     detail: string;
     circle?: string;

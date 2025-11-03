@@ -1,4 +1,5 @@
 
+
 import { GoogleGenAI, Type } from "@google/genai";
 import type { Question, Answer, Consensus, Persona, User, Comment, PersonaProfile } from '../types';
 
@@ -51,7 +52,7 @@ async function callAI(prompt: string, user: User | null, jsonOutput: boolean = f
         const model = jsonOutput ? GEMINI_JSON_MODEL : GEMINI_TEXT_MODEL;
         const response = await geminiAI.models.generateContent({
             model,
-            contents: prompt,
+            contents: { parts: [{ text: prompt }] },
             ...(jsonOutput && {
                 config: {
                     responseMimeType: "application/json",

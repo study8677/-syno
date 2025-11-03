@@ -13,7 +13,7 @@
     "hot": "Hot",
     "new": "New",
     "circles": "Circles:",
-    "noQuestionsInLang": "No questions in the current language. Try switching languages or ask a new one!",
+    "noQuestionsFound": "No questions found. Try changing filters or ask a new question!",
     "aiGenerateTopic": "AI Generate Topic",
     "generatingTopic": "Generating..."
   },

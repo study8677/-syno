@@ -13,7 +13,7 @@
     "hot": "热度",
     "new": "最新",
     "circles": "圈子:",
-    "noQuestionsInLang": "当前语言下没有问题。尝试切换语言或用当前语言提一个新问题！",
+    "noQuestionsFound": "没有找到问题。试试更换筛选条件或提一个新问题！",
     "aiGenerateTopic": "AI 生成话题",
     "generatingTopic": "生成中..."
   },

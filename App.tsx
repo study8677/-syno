@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route, useParams, useNavigate } from 'react-router-dom';
 import { Header } from './components/Header';
@@ -75,8 +76,10 @@ const App: React.FC = () => {
                 if (title.includes("失败") || title.includes("Failed")) {
                     console.warn(`Failed to generate a valid hot topic question.`);
                 } else {
+                    const newId = Date.now();
                     const newQuestion: Question = {
-                        id: Date.now(),
+                        id: newId,
+                        content_id: newId,
                         title: `${title} [🤖 AI Hot Topic]`,
                         detail,
                         circle: randomCircle,
@@ -126,8 +129,10 @@ const App: React.FC = () => {
                 return;
             }
 
+            const newId = Date.now();
             const newQuestion: Question = {
-                id: Date.now(),
+                id: newId,
+                content_id: newId,
                 title: `${title} [🤖 AI Hot Topic]`,
                 detail,
                 circle: randomCircle,
@@ -196,9 +201,10 @@ const App: React.FC = () => {
         setIsNewQuestionModalOpen(false);
         try {
             const { title, detail } = await generateQuestionFromGuidance(guidance, selectedPersona, currentUser, language);
-
+            const newId = Date.now();
             const newQuestion: Question = {
-                id: Date.now(),
+                id: newId,
+                content_id: newId,
                 title,
                 detail,
                 circle,
@@ -378,10 +384,9 @@ const App: React.FC = () => {
                 onLogout={handleLogout}
             />
             {generatingMessage && (
-                <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 flex flex-col items-center justify-center z-50">
-                    <div className="text-xl mb-4 font-semibold text-white">{generatingMessage}</div>
-                    <div className="w-16 h-16 border-4 border-t-syno-primary border-gray-600 rounded-full animate-spin"></div>
-                     <p className="text-gray-300 mt-4 text-center max-w-md">{t('generatingMessages.wait')}</p>
+                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 bg-opacity-90 backdrop-blur-sm text-white px-6 py-3 rounded-full shadow-lg flex items-center space-x-4 z-50 animate-slide-in-up-fade-in">
+                    <div className="w-5 h-5 border-2 border-t-white border-gray-500 rounded-full animate-spin"></div>
+                    <span className="text-sm font-medium">{generatingMessage}</span>
                 </div>
             )}
             <main className="container mx-auto px-4 py-8">

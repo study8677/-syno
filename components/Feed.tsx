@@ -1,4 +1,6 @@
-import React, { useState, useMemo } from 'react';
+
+
+import React, { useState, useMemo, useEffect } from 'react';
 import type { Question } from '../types';
 import { QuestionCard } from './QuestionCard';
 import { useTranslation } from '../i18n/LanguageContext';
@@ -13,6 +15,13 @@ interface FeedProps {
 type SortKey = 'hot' | 'new';
 const CIRCLES_ZH = ['全部', '科技', '艺术', '生活', '金融'];
 const CIRCLES_EN = ['All', 'Tech', 'Art', 'Life', 'Finance'];
+const CIRCLE_MAP_TO_ZH: Record<string, string> = {
+    'All': '全部',
+    'Tech': '科技',
+    'Art': '艺术',
+    'Life': '生活',
+    'Finance': '金融',
+};
 
 
 export const Feed: React.FC<FeedProps> = ({ questions, onGenerateHotTopic, isGeneratingHotTopic }) => {
@@ -20,21 +29,36 @@ export const Feed: React.FC<FeedProps> = ({ questions, onGenerateHotTopic, isGen
     const { t, language } = useTranslation();
     const [activeCircle, setActiveCircle] = useState(language === 'en' ? CIRCLES_EN[0] : CIRCLES_ZH[0]);
 
+    useEffect(() => {
+        setActiveCircle(language === 'en' ? CIRCLES_EN[0] : CIRCLES_ZH[0]);
+    }, [language]);
+
     const CIRCLES = language === 'en' ? CIRCLES_EN : CIRCLES_ZH;
-    const CIRCLE_MAP_TO_ZH = {
-        'All': '全部',
-        'Tech': '科技',
-        'Art': '艺术',
-        'Life': '生活',
-        'Finance': '金融',
-    }
+
+    const displayedQuestions = useMemo(() => {
+        const contentMap = new Map<number, Question>();
+
+        // First pass: prioritize questions in the user's selected language
+        questions.forEach(q => {
+            if (q.language === language) {
+                contentMap.set(q.content_id, q);
+            }
+        });
+
+        // Second pass: fill in any missing content with a version from another language
+        questions.forEach(q => {
+            if (!contentMap.has(q.content_id)) {
+                contentMap.set(q.content_id, q);
+            }
+        });
+
+        return Array.from(contentMap.values());
+    }, [questions, language]);
 
     const sortedQuestions = useMemo(() => {
-        const langFiltered = questions.filter(q => q.language === language);
-
         const circleFiltered = activeCircle === CIRCLES[0]
-            ? langFiltered
-            : langFiltered.filter(q => {
+            ? displayedQuestions
+            : displayedQuestions.filter(q => {
                 // This logic allows filtering regardless of the UI language
                 const zhCircle = language === 'en' ? CIRCLE_MAP_TO_ZH[activeCircle as keyof typeof CIRCLE_MAP_TO_ZH] : activeCircle;
                 return q.circle === zhCircle;
@@ -48,7 +72,7 @@ export const Feed: React.FC<FeedProps> = ({ questions, onGenerateHotTopic, isGen
             return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         }
         return sorted;
-    }, [questions, sort, activeCircle, language, CIRCLES]);
+    }, [displayedQuestions, sort, activeCircle, language, CIRCLES]);
 
     const SortButton: React.FC<{ sortKey: SortKey, label: string }> = ({ sortKey, label }) => (
         <button
@@ -108,7 +132,7 @@ export const Feed: React.FC<FeedProps> = ({ questions, onGenerateHotTopic, isGen
                 ))}
                  {sortedQuestions.length === 0 && (
                     <div className="text-center py-10 text-syno-text-secondary">
-                        {t('feed.noQuestionsInLang')}
+                        {t('feed.noQuestionsFound')}
                     </div>
                 )}
             </div>

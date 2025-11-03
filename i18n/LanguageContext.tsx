@@ -17,9 +17,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         if (storedLang === 'en' || storedLang === 'zh-CN') {
             return storedLang;
         }
-        // Default to browser language or 'en'
-        const browserLang = navigator.language.split('-')[0];
-        return browserLang === 'zh' ? 'zh-CN' : 'en';
+        // Default to Chinese Simplified
+        return 'zh-CN';
     });
     
     const [translations, setTranslations] = useState<Record<Language, Translations> | null>(null);

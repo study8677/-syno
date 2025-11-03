@@ -41,6 +41,7 @@ export const DEMO_USERS: User[] = [
 const DEMO_QUESTIONS_ZH: Question[] = [
     {
       id: 1,
+      content_id: 1,
       title: "人工智能（AI）将如何改变未来的软件开发？",
       detail: "随着AI技术的飞速发展，从代码生成到自动化测试，AI正在渗透到软件开发的各个环节。我想深入了解一下，未来几年，AI将从哪些方面、以何种程度重塑软件工程师的工作？是会取代部分岗位，还是会成为不可或缺的超级工具？",
       circle: "科技",
@@ -52,6 +53,7 @@ const DEMO_QUESTIONS_ZH: Question[] = [
     },
     {
       id: 2,
+      content_id: 2,
       title: "如何在日常生活中实践正念（Mindfulness）？",
       detail: "最近总是感到焦虑和压力，听说正念很有帮助。有没有一些简单、易于上手的正念练习方法，可以在工作间隙或通勤路上进行？希望能具体一些，比如如何调整呼吸，如何观察思绪等。",
       circle: "生活",
@@ -63,6 +65,7 @@ const DEMO_QUESTIONS_ZH: Question[] = [
     },
     {
       id: 3,
+      content_id: 3,
       title: "对于初学者来说，学习哪种艺术形式最容易获得成就感？",
       detail: "一直想培养一个艺术爱好，但又怕太难坚持不下去。是水彩、素描、数字绘画还是陶艺？希望大家能从投入成本、学习曲线和“出作品”速度几个方面给点建议。",
       circle: "艺术",
@@ -115,6 +118,7 @@ const DEMO_ANSWERS_ZH: Answer[] = [
 const DEMO_QUESTIONS_EN: Question[] = [
     {
       id: 4,
+      content_id: 1,
       title: "How will Artificial Intelligence (AI) change the future of software development?",
       detail: "With the rapid development of AI technology, from code generation to automated testing, AI is permeating every aspect of software development. I want to understand in-depth, in the coming years, in what ways and to what extent will AI reshape the work of software engineers? Will it replace some positions, or will it become an indispensable super-tool?",
       circle: "科技",
@@ -126,6 +130,7 @@ const DEMO_QUESTIONS_EN: Question[] = [
     },
     {
       id: 5,
+      content_id: 2,
       title: "How can one practice mindfulness in daily life?",
       detail: "Lately, I've been feeling anxious and stressed, and I've heard that mindfulness can be very helpful. Are there any simple, easy-to-learn mindfulness exercises that can be done during work breaks or on the commute? I'm hoping for specific suggestions, such as how to regulate breathing and how to observe thoughts.",
       circle: "生活",
@@ -137,6 +142,7 @@ const DEMO_QUESTIONS_EN: Question[] = [
     },
     {
       id: 6,
+      content_id: 3,
       title: "For a beginner, which art form is easiest to gain a sense of accomplishment from?",
       detail: "I've always wanted to cultivate an artistic hobby, but I'm afraid it will be too difficult to stick with. Is it watercolor, sketching, digital painting, or pottery? I hope everyone can offer some advice in terms of cost, learning curve, and the speed at which one can produce finished works.",
       circle: "艺术",

@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import type { Question } from '../types';
@@ -19,12 +20,35 @@ export const SearchResultsPage: React.FC<SearchResultsPageProps> = ({ questions 
             return [];
         }
         const lowercasedQuery = query.toLowerCase();
-        // Only search in questions of the current language
-        return questions.filter(question =>
-            question.language === language &&
-            (question.title.toLowerCase().includes(lowercasedQuery) || 
-            question.detail.toLowerCase().includes(lowercasedQuery))
+
+        // 1. Find all questions that match the search query, regardless of language.
+        const allMatchingQuestions = questions.filter(q => 
+            q.title.toLowerCase().includes(lowercasedQuery) ||
+            q.detail.toLowerCase().includes(lowercasedQuery)
         );
+
+        // 2. Get the unique content_ids from the matches.
+        const matchingContentIds = new Set(allMatchingQuestions.map(q => q.content_id));
+
+        // 3. Build the final results list, prioritizing the user's language but including fallbacks.
+        const resultsMap = new Map<number, Question>();
+
+        // First pass: Add matches that are in the user's preferred language.
+        questions.forEach(q => {
+            if (matchingContentIds.has(q.content_id) && q.language === language) {
+                resultsMap.set(q.content_id, q);
+            }
+        });
+
+        // Second pass: Add fallbacks for any matched content that didn't have a version in the user's language.
+        allMatchingQuestions.forEach(q => {
+            if (!resultsMap.has(q.content_id)) {
+                resultsMap.set(q.content_id, q);
+            }
+        });
+
+        return Array.from(resultsMap.values());
+
     }, [query, questions, language]);
 
     return (
